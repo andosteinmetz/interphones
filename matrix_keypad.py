@@ -38,6 +38,7 @@ class Keypad:
             pig.set_pull_up_down(self.rows[j], pigpio.PUD_UP)
 
     def getKey(self):
+        # returns an array with the row and column values in that order
         self.setup()
         keyInput = []
         rowVal = -1
@@ -73,8 +74,11 @@ class Keypad:
         if colVal < 0 or colVal > self.colCount - 1:
             self.exit()
             return
-        
+
+        # return column and row numbers
         keyInput.append(colVal)
+        self.exit()
+        return keyInput
 
     def exit(self):
         for i in range(self.rowCount):
@@ -83,21 +87,24 @@ class Keypad:
         for j in range(self.colCount):
             pig.set_mode(self.cols[j], pigpio.INPUT)
             pig.set_pull_up_down(self.cols[j], pigpio.PUD_UP)
-
-        return input
                        
 if __name__ == '__main__':
     #configure GPIO
-    myRows = [26,19,13,6]
-    myCols = [21,20,16,12]
+    myCols = [6,13,19,26]
+    myRows = [21,20,16,12]
 
     #create an instance
     kp = Keypad(myCols, myRows)
 
     #Loop while waiting for a keypress
-    myInput = None
-    while myInput == None:
-        myInput = kp.getKey()
+    try:
+        myInput = None
+        while myInput == None:
+            myInput = kp.getKey()
 
-    #print the result
-    print myInput
+        #print the result
+        print myInput
+        pig.stop()
+
+    except KeyboardInterrupt:
+        pig.stop()
