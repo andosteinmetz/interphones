@@ -1,17 +1,18 @@
-#using pigpio in place of native Rpi.GPIO
+#import RPi.GPIO as GPIO
 import pigpio
 import time
-from matrix_keypad import Keypad
-
-myKeypad = Keypad([4,5,7],[23,24,25])
-print myKeypad.cols
 
 #set the button pin
 buttonPin = 17
+ledPin = 22
+
+#configure GPIO
+#GPIO.setmode(GPIO.BCM)
+#GPIO.setup(buttonPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 #create + configure pigpio instance
 pig = pigpio.pi()
-pig.set_pull_up_down(buttonPin, pigpio.PUD_UP)
+pig.set_pull_up_down(buttonPin, pigpio.PUD_DOWN)
 
 
 #LED class definition
@@ -41,7 +42,7 @@ class LED:
         self.state = 0;
         pig.write(self.pin, self.diodeStates[0])
 
-#TODO -  create a button class. may be portable to the project.
+#TODO -  create a button class. may be portable to the actual project
 
 #LED instance
 firstLED = LED(22, 0)        
@@ -55,13 +56,13 @@ print 'Waiting for falling edge on port 17'
 
 while True:
     try:
-        pig.wait_for_edge(buttonPin, pigpio.FALLING_EDGE)
+        pig.wait_for_edge(buttonPin, pigpio.RISING_EDGE)
         print 'button pressed'
         firstLED.blinkOnce()
         firstLED.toggle()
         time.sleep(0.05)
 
-        pig.wait_for_edge(buttonPin, pigpio.RISING_EDGE)
+        pig.wait_for_edge(buttonPin, pigpio.FALLING_EDGE)
         print 'button released'
         time.sleep(0.05)
 

@@ -31,27 +31,49 @@ class LED:
 
 #TODO -  create a button class. may be portable to the actual project
 
+class momentarySwitch:
+
+    def __init__(self, pinNumber, triggerLow):
+        self.pin = pinNumber
+        self.triggerLow = triggerLow
+        
+        if self.triggerLow:
+            GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            self.pressed = GPIO.FALLING
+            self.released = GPIO.RISING
+            
+        else:
+            GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            self.pressed = GPIO.RISING
+            self.released= GPIO.FALLING
+
+    def listen(self):
+        GPIO.wait_for_edge(self.pin, self.pressed)
+        print 'button pressed'
+        time.sleep(0.05)
+
+        GPIO.wait_for_edge(buttonPin, self.released)
+        print 'button released'
+        time.sleep(0.05)
+            
+
 #LED instance
-firstLED = LED(22, 0)        
+firstLED = LED(22, 0)
+
+#Hall Effect receiver switch
+receiverSwitch = momentarySwitch(buttonPin, False)
+button = momentarySwitch(23, True)
 
 #start the program
-print 'Make sure a button is connected so that when pressed'
-print 'it will connect GPIO port 17 to GND'
 raw_input('Press Enter when ready...')
 
 print 'Waiting for falling edge on port 17'
 
 while True:
     try:
-        GPIO.wait_for_edge(buttonPin, GPIO.FALLING)
-        print 'button pressed'
-        #firstLED.blinkOnce()
-        firstLED.toggle()
-        time.sleep(0.05)
-
-        GPIO.wait_for_edge(buttonPin, GPIO.RISING)
-        print 'button released'
-        time.sleep(0.05)
+        receiverSwitch.listen()
+        # Problems watching multiple buttons
+        #button.listen()
 
     except KeyboardInterrupt:
         GPIO.output(ledPin, GPIO.LOW)

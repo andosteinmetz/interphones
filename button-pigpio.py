@@ -6,14 +6,11 @@ import time
 buttonPin = 17
 ledPin = 22
 
-#configure GPIO
-#GPIO.setmode(GPIO.BCM)
-#GPIO.setup(buttonPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
 #create + configure pigpio instance
 pig = pigpio.pi()
-pig.set_pull_up_down(buttonPin, pigpio.PUD_UP)
 
+#initialize timestamp
+time_stamp = time.time()
 
 #LED class definition
 class LED:
@@ -25,10 +22,11 @@ class LED:
         pig.set_mode(pinNumber, pigpio.OUTPUT)
 
     def toggle(self):
-        if self.state == 0:
-            self.state = 1
-        else:
-            self.state = 0
+        #if self.state == 0:
+        #    self.state = 1
+        #else:
+        #    self.state = 0
+        self.state = not self.state
         pig.write(self.pin, self.diodeStates[self.state])
 
     def blinkOnce(self):
@@ -42,32 +40,62 @@ class LED:
         self.state = 0;
         pig.write(self.pin, self.diodeStates[0])
 
-#TODO -  create a button class. may be portable to the actual project
+class momentarySwitch:
+    #bouncetime is in fractions of a second ie 0.2 is 200ms
+    #triggerLow is a boolean value indicating whether the switch is active on low or high voltage
+    #callback functions should take at least 3 args - gpio, level and tick
+    def __init__(self, pinNumber, triggerLow, callback, bouncetime):
+        self.pin = pinNumber
+        self.triggerLow = triggerLow
+        self.pud = pigpio.PUD_UP if triggerLow else pigpio.PUD_DOWN
+        self.pressed = pigpio.FALLING_EDGE if triggerLow else pigpio.RISING_EDGE
+        self.released = pigpio.RISING_EDGE if triggerLow else pigpio.FALLING_EDGE
+        self.callback = debounce(bouncetime, callback)
+        
+        pig.set_mode(self.pin, pigpio.INPUT)
+        pig.set_pull_up_down(self.pin, self.pud)
+
+    def listen(self):
+        pig.callback(self.pin, self.pressed, self.callback)
+
+def receiverPickedUp(gpio, level, tick):
+    print 'The receiver has been picked up'
+    button.listen()
+
+def buttonPressed(gpio, level, tick):
+    print(gpio, level, tick)
+
+def debounce(bouncetime, func, *args):
+    def debounced(*args):
+        global time_stamp
+        time_now = time.time()
+        if (time_now - time_stamp) >= bouncetime:
+            func( *args )
+        time_stamp = time_now
+    return debounced
+
+receiverSwitch = momentarySwitch(17, False, receiverPickedUp, 0)
+button = momentarySwitch(23, True, buttonPressed, 0.2)
+
 
 #LED instance
 firstLED = LED(22, 0)        
 
 #start the program
-print 'Make sure a button is connected so that when pressed'
-print 'it will connect GPIO port 17 to GND'
 raw_input('Press Enter when ready...')
 
-print 'Waiting for falling edge on port 17'
+print 'Waiting for input'
+
+receiverSwitch.listen()
+#moved to receiver pickup
+#button.listen()
 
 while True:
     try:
-        pig.wait_for_edge(buttonPin, pigpio.FALLING_EDGE)
-        print 'button pressed'
-        firstLED.blinkOnce()
-        firstLED.toggle()
-        time.sleep(0.05)
-
-        pig.wait_for_edge(buttonPin, pigpio.RISING_EDGE)
-        print 'button released'
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     except KeyboardInterrupt:
-        firstLED.turnOff();
+        firstLED.turnOff()
         pig.stop()
 
 firstLED.turnOff()
