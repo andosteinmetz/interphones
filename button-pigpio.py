@@ -71,6 +71,7 @@ def receiverPickedUp(gpio, level, tick):
 def receiverHungUp(gpio, level, tick):
     print 'The receiver has been hung up'
     button.listening_for_press.cancel()
+    button.listening_for_press = None
 
 def buttonPressed(gpio, level, tick):
     print(gpio, level, tick)
@@ -97,8 +98,6 @@ raw_input('Press Enter when ready...')
 print 'Waiting for input'
 
 receiverSwitch.listen()
-#moved to receiver pickup
-#button.listen()
 
 while True:
     try:
