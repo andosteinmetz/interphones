@@ -46,7 +46,7 @@ class momentarySwitch:
     #triggerLow is a boolean value indicating whether the switch is active on low or high voltage
     #callback functions should take at least 3 args - gpio, level and tick
     #
-    def __init__(self, pinNumber, triggerLow, callback=None, release_callback=None, bouncetime):
+    def __init__(self, pinNumber, triggerLow, callback=None, release_callback=None, bouncetime=0.3):
         self.pin = pinNumber
         self.triggerLow = triggerLow
         self.pud = pigpio.PUD_UP if triggerLow else pigpio.PUD_DOWN
@@ -84,7 +84,7 @@ def debounce(bouncetime, func, *args):
     return debounced
 
 receiverSwitch = momentarySwitch(17, False, receiverPickedUp, receiverHungUp, 0)
-button = momentarySwitch(23, True, buttonPressed, 0.2)
+button = momentarySwitch(23, True, buttonPressed, 0.3)
 
 
 #LED instance
