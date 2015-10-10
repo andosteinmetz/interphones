@@ -60,9 +60,9 @@ class momentarySwitch:
 
     def listen(self):
         if self.callback:
-            pig.callback(self.pin, self.pressed, self.callback)
+            self.listening_for_press = pig.callback(self.pin, self.pressed, self.callback)
         if self.release_callback:
-            pig.callback(self.pin, self.released, self.release_callback)
+            self.listening_for_release = pig.callback(self.pin, self.released, self.release_callback)
 
 def receiverPickedUp(gpio, level, tick):
     print 'The receiver has been picked up'
@@ -70,7 +70,7 @@ def receiverPickedUp(gpio, level, tick):
 
 def receiverHungUp(gpio, level, tick):
     print 'The receiver has been hung up'
-    button.callback.cancel()
+    button.listening_for_press.cancel()
 
 def buttonPressed(gpio, level, tick):
     print(gpio, level, tick)
