@@ -64,14 +64,17 @@ class momentarySwitch:
         if self.release_callback:
             self.listening_for_release = pig.callback(self.pin, self.released, self.release_callback)
 
+    def unlisten(self):
+        self.listening_for_press.cancel()
+        self.listening_for_release.cancel()
+
 def receiverPickedUp(gpio, level, tick):
     print 'The receiver has been picked up'
     button.listen()
 
 def receiverHungUp(gpio, level, tick):
     print 'The receiver has been hung up'
-    button.listening_for_press.cancel()
-    button.listening_for_press = None
+    button.unlisten()
 
 def buttonPressed(gpio, level, tick):
     print(gpio, level, tick)
