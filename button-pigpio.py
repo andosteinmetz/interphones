@@ -41,26 +41,35 @@ class LED:
         pig.write(self.pin, self.diodeStates[0])
 
 class momentarySwitch:
+    #
     #bouncetime is in fractions of a second ie 0.2 is 200ms
     #triggerLow is a boolean value indicating whether the switch is active on low or high voltage
     #callback functions should take at least 3 args - gpio, level and tick
-    def __init__(self, pinNumber, triggerLow, callback, bouncetime):
+    #
+    def __init__(self, pinNumber, triggerLow, callback=None, release_callback=None, bouncetime):
         self.pin = pinNumber
         self.triggerLow = triggerLow
         self.pud = pigpio.PUD_UP if triggerLow else pigpio.PUD_DOWN
         self.pressed = pigpio.FALLING_EDGE if triggerLow else pigpio.RISING_EDGE
         self.released = pigpio.RISING_EDGE if triggerLow else pigpio.FALLING_EDGE
         self.callback = debounce(bouncetime, callback)
+        self.release_callback = debounce(bouncetime, release_callback)
         
         pig.set_mode(self.pin, pigpio.INPUT)
         pig.set_pull_up_down(self.pin, self.pud)
 
     def listen(self):
-        pig.callback(self.pin, self.pressed, self.callback)
+        if self.callback:
+            pig.callback(self.pin, self.pressed, self.callback)
+        if self.release_callback:
+            pig.callback(self.pin, self.released, self.release_callback)
 
 def receiverPickedUp(gpio, level, tick):
     print 'The receiver has been picked up'
     button.listen()
+
+def receiverHungUp(gpio, level, tick):
+    print 'The receiver has been hung up'
 
 def buttonPressed(gpio, level, tick):
     print(gpio, level, tick)
@@ -74,7 +83,7 @@ def debounce(bouncetime, func, *args):
         time_stamp = time_now
     return debounced
 
-receiverSwitch = momentarySwitch(17, False, receiverPickedUp, 0)
+receiverSwitch = momentarySwitch(17, False, receiverPickedUp, receiverHungUp, 0)
 button = momentarySwitch(23, True, buttonPressed, 0.2)
 
 
