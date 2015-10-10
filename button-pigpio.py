@@ -70,6 +70,7 @@ def receiverPickedUp(gpio, level, tick):
 
 def receiverHungUp(gpio, level, tick):
     print 'The receiver has been hung up'
+    button.callback.cancel()
 
 def buttonPressed(gpio, level, tick):
     print(gpio, level, tick)
