@@ -2,49 +2,18 @@
 import pigpio
 import time
 
-#set the button pin
-buttonPin = 17
-ledPin = 22
-
 #create + configure pigpio instance
 pig = pigpio.pi()
 
 #initialize timestamp
 time_stamp = time.time()
 
-#LED class definition
-class LED:
-    diodeStates = [0, 1]
-
-    def __init__(self, pinNumber, initialState):
-        self.pin = pinNumber
-        self.state = initialState
-        pig.set_mode(pinNumber, pigpio.OUTPUT)
-
-    def toggle(self):
-        #if self.state == 0:
-        #    self.state = 1
-        #else:
-        #    self.state = 0
-        self.state = not self.state
-        pig.write(self.pin, self.diodeStates[self.state])
-
-    def blinkOnce(self):
-        pig.write(self.pin, 0)
-        time.sleep(0.05)
-        pig.write(self.pin, self.diodeStates[1])
-        time.sleep(0.05)
-        pig.write(self.pin, self.diodeStates[0])
-
-    def turnOff(self):
-        self.state = 0;
-        pig.write(self.pin, self.diodeStates[0])
 
 class momentarySwitch:
     #
-    #bouncetime is in fractions of a second ie 0.2 is 200ms
-    #triggerLow is a boolean value indicating whether the switch is active on low or high voltage
-    #callback functions should take at least 3 args - gpio, level and tick
+    # bouncetime is in fractions of a second ie 0.2 is 200ms
+    # triggerLow is a boolean value indicating whether the switch is active on low or high voltage
+    # callback functions should take at least 3 args - gpio, level and tick
     #
     def __init__(self, pinNumber, triggerLow, callback=None, release_callback=None, bouncetime=0.3):
         self.pin = pinNumber
@@ -99,12 +68,14 @@ def debounce(bouncetime, func, *args):
         time_stamp = time_now
     return debounced
 
-receiverSwitch = momentarySwitch(17, False, receiverPickedUp, receiverHungUp, 0)
-button = momentarySwitch(23, True, buttonPressed, 0.3)
 
+#set the button pin
+receiverPin = 17
+buttonPin = 23
 
-#LED instance
-#firstLED = LED(22, 0)
+receiverSwitch = momentarySwitch(receiverPin, False, receiverPickedUp, receiverHungUp, 0)
+button = momentarySwitch(buttonPin, True, buttonPressed, 0.3)
+
 
 #start the program
 raw_input('Press Enter when ready...')
@@ -118,8 +89,6 @@ while True:
         time.sleep(0.01)
 
     except KeyboardInterrupt:
-        firstLED.turnOff()
         pig.stop()
 
-#firstLED.turnOff()
 pig.stop()
