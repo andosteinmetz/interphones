@@ -49,9 +49,16 @@ class momentarySwitch:
     def __init__(self, pinNumber, triggerLow, callback=None, release_callback=None, bouncetime=0.3):
         self.pin = pinNumber
         self.triggerLow = triggerLow
-        self.pud = pigpio.PUD_UP if triggerLow else pigpio.PUD_DOWN
-        self.pressed = pigpio.FALLING_EDGE if triggerLow else pigpio.RISING_EDGE
-        self.released = pigpio.RISING_EDGE if triggerLow else pigpio.FALLING_EDGE
+
+        if self.triggerLow:
+            self.pud = pigpio.PUD_UP
+            self.pressed = pigpio.FALLING_EDGE
+            self.released = pigpio.RISING_EDGE
+        else:
+            self.pud = pigpio.PUD_DOWN
+            self.pressed = pigpio.RISING_EDGE
+            self.released = pigpio.FALLING_EDGE
+
         self.callback = debounce(bouncetime, callback)
         self.release_callback = debounce(bouncetime, release_callback)
         
@@ -68,16 +75,20 @@ class momentarySwitch:
         self.listening_for_press.cancel()
         self.listening_for_release.cancel()
 
+
 def receiverPickedUp(gpio, level, tick):
     print 'The receiver has been picked up'
     button.listen()
+
 
 def receiverHungUp(gpio, level, tick):
     print 'The receiver has been hung up'
     button.unlisten()
 
+
 def buttonPressed(gpio, level, tick):
     print(gpio, level, tick)
+
 
 def debounce(bouncetime, func, *args):
     def debounced(*args):
@@ -93,7 +104,7 @@ button = momentarySwitch(23, True, buttonPressed, 0.3)
 
 
 #LED instance
-firstLED = LED(22, 0)        
+#firstLED = LED(22, 0)
 
 #start the program
 raw_input('Press Enter when ready...')
@@ -110,5 +121,5 @@ while True:
         firstLED.turnOff()
         pig.stop()
 
-firstLED.turnOff()
+#firstLED.turnOff()
 pig.stop()
