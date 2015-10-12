@@ -59,12 +59,12 @@ def buttonPressed(gpio, level, tick):
     print(gpio, level, tick)
 
 
-def debounce(bouncetime, func, *args):
-    def debounced(*args):
+def debounce(bouncetime, func, *args, **kwargs):
+    def debounced(*args, **kwargs):
         global time_stamp
         time_now = time.time()
         if (time_now - time_stamp) >= bouncetime:
-            func(*args)
+            func(*args, **kwargs)
         time_stamp = time_now
     return debounced
 
