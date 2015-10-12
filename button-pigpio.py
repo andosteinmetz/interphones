@@ -64,31 +64,32 @@ def debounce(bouncetime, func, *args):
         global time_stamp
         time_now = time.time()
         if (time_now - time_stamp) >= bouncetime:
-            func( *args )
+            func(*args)
         time_stamp = time_now
     return debounced
 
 
-#set the button pin
-receiverPin = 17
-buttonPin = 23
+if __name__ == '__main__':
 
-receiverSwitch = momentarySwitch(receiverPin, False, receiverPickedUp, receiverHungUp, 0)
-button = momentarySwitch(buttonPin, True, buttonPressed, 0.3)
+    #set the button pin
+    receiverPin = 17
+    buttonPin = 23
 
+    receiverSwitch = momentarySwitch(receiverPin, False, receiverPickedUp, receiverHungUp, 0)
+    button = momentarySwitch(buttonPin, True, buttonPressed, 0.3)
 
-#start the program
-raw_input('Press Enter when ready...')
+    #start the program
+    raw_input('Press Enter when ready...')
 
-print 'Waiting for input'
+    print 'Waiting for input'
 
-receiverSwitch.listen()
+    receiverSwitch.listen()
 
-while True:
-    try:
-        time.sleep(0.01)
+    while True:
+        try:
+            time.sleep(0.01)
 
-    except KeyboardInterrupt:
-        pig.stop()
+        except KeyboardInterrupt:
+            pig.stop()
 
-pig.stop()
+    pig.stop()

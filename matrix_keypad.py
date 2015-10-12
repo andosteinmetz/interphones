@@ -77,8 +77,9 @@ class Keypad:
 
         # return column and row numbers
         keyInput.append(colVal)
+        keyVal = (keyInput[0] * self.colCount) + keyInput[1]
         self.exit()
-        return keyInput
+        return keyVal
 
     def exit(self):
         for i in range(self.rowCount):
