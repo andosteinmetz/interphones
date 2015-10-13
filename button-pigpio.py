@@ -35,9 +35,9 @@ class momentarySwitch:
         pig.set_pull_up_down(self.pin, self.pud)
 
     def listen(self):
-        if self.callback:
+        if self.callback is not None:
             self.listening_for_press = pig.callback(self.pin, self.pressed, self.callback)
-        if self.release_callback:
+        if self.release_callback is not None:
             self.listening_for_release = pig.callback(self.pin, self.released, self.release_callback)
 
     def unlisten(self):
