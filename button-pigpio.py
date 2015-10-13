@@ -39,8 +39,6 @@ class momentarySwitch:
             self.listening_for_press = pig.callback(self.pin, self.pressed, self.callback)
         if self.release_callback is not None:
             self.listening_for_release = pig.callback(self.pin, self.released, self.release_callback)
-            print self.release_callback
-            print self.listening_for_release
 
     def unlisten(self):
         self.listening_for_press.cancel()
@@ -79,6 +77,9 @@ if __name__ == '__main__':
 
     receiverSwitch = momentarySwitch(receiverPin, False, receiverPickedUp, receiverHungUp, 0)
     button = momentarySwitch(buttonPin, True, buttonPressed, 0.25)
+
+    print button.release_callback
+    print button.listening_for_release
 
     #start the program
     raw_input('Press Enter when ready...')
