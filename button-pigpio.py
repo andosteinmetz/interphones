@@ -79,7 +79,7 @@ if __name__ == '__main__':
     button = momentarySwitch(buttonPin, True, buttonPressed, 0.25)
 
     print button.release_callback
-    print button.listening_for_release
+    if button.listening_for_release print button.listening_for_release
 
     #start the program
     raw_input('Press Enter when ready...')
