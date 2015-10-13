@@ -28,8 +28,8 @@ class momentarySwitch:
             self.pressed = pigpio.RISING_EDGE
             self.released = pigpio.FALLING_EDGE
 
-        self.callback = debounce(bouncetime, callback)
-        self.release_callback = debounce(bouncetime, release_callback)
+        self.callback = debounce(bouncetime, callback) if callback is not None else None
+        self.release_callback = debounce(bouncetime, release_callback) if release_callback is not None else None
         
         pig.set_mode(self.pin, pigpio.INPUT)
         pig.set_pull_up_down(self.pin, self.pud)
@@ -77,10 +77,6 @@ if __name__ == '__main__':
 
     receiverSwitch = momentarySwitch(receiverPin, False, receiverPickedUp, receiverHungUp, 0)
     button = momentarySwitch(buttonPin, True, buttonPressed, 0.25)
-
-    print button.release_callback
-    if button.listening_for_release:
-        print button.listening_for_release
 
     #start the program
     raw_input('Press Enter when ready...')
