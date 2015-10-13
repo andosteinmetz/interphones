@@ -15,7 +15,7 @@ class momentarySwitch:
     # triggerLow is a boolean value indicating whether the switch is active on low or high voltage
     # callback functions should take at least 3 args - gpio, level and tick
     #
-    def __init__(self, pinNumber, triggerLow, callback=None, release_callback=None, bouncetime=0.3):
+    def __init__(self, pinNumber, triggerLow, bouncetime=0.3, callback=None, release_callback=None):
         print 'release callback:', release_callback
         self.pin = pinNumber
         self.triggerLow = triggerLow
@@ -76,8 +76,8 @@ if __name__ == '__main__':
     receiverPin = 17
     buttonPin = 23
 
-    receiverSwitch = momentarySwitch(receiverPin, False, receiverPickedUp, receiverHungUp, 0)
-    button = momentarySwitch(buttonPin, True, buttonPressed, 0.25)
+    receiverSwitch = momentarySwitch(receiverPin, False, 0, receiverPickedUp, receiverHungUp)
+    button = momentarySwitch(buttonPin, True, 0.25, buttonPressed)
 
     #start the program
     raw_input('Press Enter when ready...')
