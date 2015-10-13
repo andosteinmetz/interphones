@@ -16,6 +16,7 @@ class momentarySwitch:
     # callback functions should take at least 3 args - gpio, level and tick
     #
     def __init__(self, pinNumber, triggerLow, callback=None, release_callback=None, bouncetime=0.3):
+        print release_callback
         self.pin = pinNumber
         self.triggerLow = triggerLow
 
