@@ -78,6 +78,8 @@ if __name__ == '__main__':
     receiverSwitch = momentarySwitch(receiverPin, False, receiverPickedUp, receiverHungUp, 0)
     button = momentarySwitch(buttonPin, True, buttonPressed, 0.25)
 
+    print button.release_callback
+
     #start the program
     raw_input('Press Enter when ready...')
 
