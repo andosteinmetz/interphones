@@ -96,6 +96,9 @@ if __name__ == '__main__':
             time.sleep(0.01)
 
         except KeyboardInterrupt:
+            receiverSwitch.unlisten()
+            if button.listening_for_press:
+                button.unlisten()
             pig.stop()
 
     pig.stop()
