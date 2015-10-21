@@ -1,7 +1,7 @@
 import pigpio
 import time
+import threading
 
-#create + configure pigpio instance
 pig = pigpio.pi()
 
 #initialize timestamp
@@ -88,6 +88,8 @@ if __name__ == '__main__':
     buttonPin = 23
     buttonPin2 = 27
     buttonPin3 = 22
+ 
+    print(threading.enumerate())
 
     receiverSwitch = momentarySwitch('receiver',receiverPin, False, 0, receiverPickedUp, receiverHungUp)
     button = momentarySwitch('One',buttonPin, True, 0.3, buttonPressed)
@@ -98,7 +100,6 @@ if __name__ == '__main__':
     raw_input('Press Enter when ready...')
 
     print 'Waiting for input'
-
     receiverSwitch.listen()
 
     while True:
@@ -106,6 +107,7 @@ if __name__ == '__main__':
             time.sleep(0.01)
 
         except KeyboardInterrupt:
+            receiverSwitch.unlisten()
             pig.stop()
 
     pig.stop()
